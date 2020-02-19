@@ -6,6 +6,7 @@ import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 import static me.jfz.reader.RssData.nameAndSyndFeedMap;
 import static me.jfz.reader.RssData.titleAndContentMap;
 
+import me.jfz.reader.model.FeedModel;
 import me.jfz.reader.thread.SubscibeThread;
 
 import com.formdev.flatlaf.FlatLightLaf;
@@ -135,27 +136,27 @@ public class MainGui {
             String name = e.getPath().getLastPathComponent().toString();
             logger.info("当前被选中的节点:{}", name);
 
-            DefaultListModel<String> defaultListModel = new DefaultListModel<>();
+            DefaultListModel<FeedModel> defaultListModel = new DefaultListModel<>();
             SyndFeed syndFeed = nameAndSyndFeedMap.get(name);
             if (syndFeed == null) {
                 return;
             }
             int i = 0;
             for (SyndEntry entry : syndFeed.getEntries()) {
-                // System.out.println(entry);
-                defaultListModel.add(i++, entry.getTitle());
-                if (entry.getContents() != null && !entry.getContents().isEmpty()
-                    && entry.getContents().get(0) != null) {
-                    titleAndContentMap.putIfAbsent(entry.getTitle(), entry.getContents().get(0).getValue());
-                }
+                FeedModel feedModel = new FeedModel(entry);
+                defaultListModel.add(i++, feedModel);
             }
             list1.setModel(defaultListModel);
         });
         list1.addListSelectionListener(e -> {
             // 设置只有释放鼠标时才触发
             if (!list1.getValueIsAdjusting()) {
-                String title = (String) list1.getSelectedValue();
-                logger.info(title);
+                FeedModel feedModel = (FeedModel) list1.getSelectedValue();
+                if (feedModel == null) {
+                    logger.error("feedModel is null");
+                    return;
+                }
+                logger.info(feedModel.getTitle());
                 File file = new File("./tmpHtml/" + UUID.randomUUID().toString() + ".html");
                 try {
                     FileWriter fw = new FileWriter(file, false);
@@ -163,8 +164,13 @@ public class MainGui {
                     fw.write("<head>");
                     fw.write("</head>");
                     fw.write("<body>");
-                    fw.write("<h1>" + title + "</h1>");
-                    fw.write(titleAndContentMap.get(title) + "");
+                    fw.write("<h1>" + feedModel.getTitle() + "</h1>");
+                    if (feedModel.getSyndEntry().getContents() != null) {
+                        fw.write( feedModel.getSyndEntry().getContents()+ "");
+                    } else {
+                        fw.write( "");
+                        logger.error("feed 文件内容解析失败");
+                    }
                     fw.write("</body></html>");
                     //清理操作
                     fw.flush();
