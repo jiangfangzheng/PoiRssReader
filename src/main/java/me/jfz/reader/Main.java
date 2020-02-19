@@ -1,7 +1,5 @@
 package me.jfz.reader;
 
-import me.jfz.reader.thread.SubscibeThread;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +25,7 @@ public class Main {
     private static void init() {
         logger.info("init()");
         File dir = new File("./tmpHtml/");
-        if(!dir.exists()){
+        if (!dir.exists()) {
             boolean b = dir.mkdirs();
             logger.warn("创建目录tmpHtml：{}", b);
         }

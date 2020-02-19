@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.Map;
 
+import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JProgressBar;
 
 /**
  * 描述
@@ -24,17 +26,25 @@ import javax.swing.JLabel;
 public class SubscibeThread extends Thread {
     static Logger logger = LoggerFactory.getLogger(SubscibeThread.class);
 
-    private JLabel label;
+    private JComponent[] jComponents;
 
-    public SubscibeThread(JLabel label) {
-        this.label = label;
+    public SubscibeThread(JComponent[] jComponents) {
+        this.jComponents = jComponents;
     }
 
     @Override
     public void run() {
         logger.info("SubscibeThread() run start.");
+        JLabel label = (JLabel) jComponents[0];
+        JProgressBar progressBar = (JProgressBar) jComponents[1];
+        progressBar.setMinimum(0);
+        progressBar.setMaximum(nameAndUrl.size());
+        progressBar.setValue(0);
+
+        int index = 0;
         int sum = 0;
         for (Map.Entry<String, String> entry1 : nameAndUrl.entrySet()) {
+            index++;
             String name = entry1.getKey();
             String url = entry1.getValue();
             if (url != null) {
@@ -48,8 +58,10 @@ public class SubscibeThread extends Thread {
                     logger.error("SubscibeThread() run Exception:", e);
                 }
             }
+            progressBar.setValue(index);
         }
         logger.info("SubscibeThread() run finished.");
+
         label.setText("订阅项：" + nameAndSyndFeedMap.size() + "   总条数：" + sum);
     }
 }

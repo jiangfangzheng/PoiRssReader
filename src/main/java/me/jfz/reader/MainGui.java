@@ -4,7 +4,6 @@ import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
 import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 import static me.jfz.reader.RssData.nameAndSyndFeedMap;
-import static me.jfz.reader.RssData.nameAndUrl;
 import static me.jfz.reader.RssData.titleAndContentMap;
 
 import me.jfz.reader.thread.SubscibeThread;
@@ -12,8 +11,6 @@ import me.jfz.reader.thread.SubscibeThread;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
-import com.rometools.rome.io.SyndFeedInput;
-import com.rometools.rome.io.XmlReader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +19,18 @@ import java.awt.Color;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.UUID;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 
@@ -68,6 +66,14 @@ public class MainGui {
 
     private JLabel label2;
 
+    private JProgressBar progressBar1;
+
+    private JButton button4;
+
+    private JButton button5;
+
+    private JButton button6;
+
     public static void main(String[] args) {
         // FlatLightLaf 主题
         FlatLightLaf.install();
@@ -81,26 +87,30 @@ public class MainGui {
         // 一个很简单就能让窗体居中的方法, 当参数为null时窗体处于屏幕正中
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-        // 界面自定义的一些初始化
-        mainGui.createUIComponents();
+        JComponent[] jComponents = {mainGui.label2, mainGui.progressBar1};
 
+        // 界面自定义的一些初始化
+        mainGui.createUIComponents(jComponents);
         // 异步任务初始化
-        initAsync(mainGui.label2);
+        initAsync(jComponents);
     }
 
-    private static void initAsync(JLabel label) {
+    private static void initAsync(JComponent[] jComponents) {
         logger.info("initAsync()");
-        Thread thread = new SubscibeThread(label);
+        Thread thread = new SubscibeThread(jComponents);
         thread.start();
     }
 
-    private void createUIComponents() {
+    private void createUIComponents(JComponent[] jComponents) {
         // 界面文字
         label1.setText("概览");
-        label2.setText("订阅项：0   总条数：0   处理中...");
+        label2.setText("订阅项：0   总条数：0");
         button1.setText("所有  ( ... )");
         button2.setText("未读  ( ... )");
         button3.setText("星标  ( ... )");
+        button4.setText("刷新");
+        button5.setText("新增订阅...");
+        button6.setText("搜索...");
 
         // 文章列表容器加边框区别
         panel2.setBorder(BorderFactory.createLineBorder(Color.gray));
@@ -115,6 +125,12 @@ public class MainGui {
         button1.addActionListener(e -> logger.info("所有 按钮被点击"));
         button2.addActionListener(e -> logger.info("未读 按钮被点击"));
         button3.addActionListener(e -> logger.info("星标 按钮被点击"));
+        button4.addActionListener(e -> {
+            logger.info("刷新 按钮被点击");
+            initAsync(jComponents);
+        });
+        button5.addActionListener(e -> logger.info("新增订阅... 按钮被点击"));
+        button6.addActionListener(e -> logger.info("搜索... 按钮被点击"));
         tree1.addTreeSelectionListener(e -> {
             String name = e.getPath().getLastPathComponent().toString();
             logger.info("当前被选中的节点:{}", name);
@@ -128,7 +144,8 @@ public class MainGui {
             for (SyndEntry entry : syndFeed.getEntries()) {
                 // System.out.println(entry);
                 defaultListModel.add(i++, entry.getTitle());
-                if (entry.getContents() != null && !entry.getContents().isEmpty() && entry.getContents().get(0) != null) {
+                if (entry.getContents() != null && !entry.getContents().isEmpty()
+                    && entry.getContents().get(0) != null) {
                     titleAndContentMap.putIfAbsent(entry.getTitle(), entry.getContents().get(0).getValue());
                 }
             }
@@ -146,6 +163,7 @@ public class MainGui {
                     fw.write("<head>");
                     fw.write("</head>");
                     fw.write("<body>");
+                    fw.write("<h1>" + title + "</h1>");
                     fw.write(titleAndContentMap.get(title) + "");
                     fw.write("</body></html>");
                     //清理操作
