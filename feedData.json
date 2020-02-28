@@ -1,0 +1,65 @@
+{
+	"792c2e7f-174b-4fe4-8c82-c78d5682daf2": {
+		"id": "792c2e7f-174b-4fe4-8c82-c78d5682daf2",
+		"name": "我的博客",
+		"preNode": "root",
+		"type": 0,
+		"url": ""
+	},
+	"b358ce06-45e1-4732-aaff-915b5fce2e5d": {
+		"id": "b358ce06-45e1-4732-aaff-915b5fce2e5d",
+		"name": "其它收藏",
+		"preNode": "root",
+		"type": 0,
+		"url": ""
+	},
+	"37b47a4f-efe6-4067-b88c-6eaaf770ad0e": {
+		"id": "37b47a4f-efe6-4067-b88c-6eaaf770ad0e",
+		"name": "landiannews",
+		"preNode": "9675f68e-1fbe-4367-b3a1-dbb16b459a09",
+		"type": 1,
+		"url": "https://www.landiannews.com/feed"
+	},
+	"9355c6bc-66b6-411c-a9bf-2dda84d4d72a": {
+		"id": "9355c6bc-66b6-411c-a9bf-2dda84d4d72a",
+		"name": "阮一峰",
+		"preNode": "9675f68e-1fbe-4367-b3a1-dbb16b459a09",
+		"type": 1,
+		"url": "http://www.ruanyifeng.com/blog/atom.xml"
+	},
+	"adc1b0e6-67c3-45c8-9a0e-883890d2719b": {
+		"id": "adc1b0e6-67c3-45c8-9a0e-883890d2719b",
+		"name": "Sandeepin博客园",
+		"preNode": "792c2e7f-174b-4fe4-8c82-c78d5682daf2",
+		"type": 1,
+		"url": "http://feed.cnblogs.com/blog/u/72021/rss/"
+	},
+	"95a015e5-74cc-44a9-a0dc-b59905166b2d": {
+		"id": "95a015e5-74cc-44a9-a0dc-b59905166b2d",
+		"name": "异想萌域",
+		"preNode": "792c2e7f-174b-4fe4-8c82-c78d5682daf2",
+		"type": 1,
+		"url": "http://poi.ooo/index.xml"
+	},
+	"9675f68e-1fbe-4367-b3a1-dbb16b459a09": {
+		"id": "9675f68e-1fbe-4367-b3a1-dbb16b459a09",
+		"name": "科技IT",
+		"preNode": "root",
+		"type": 0,
+		"url": ""
+	},
+	"0ca9f8a2-b3c8-4bd0-a2eb-28d630f70b4b": {
+		"id": "0ca9f8a2-b3c8-4bd0-a2eb-28d630f70b4b",
+		"name": "福利吧",
+		"preNode": "b358ce06-45e1-4732-aaff-915b5fce2e5d",
+		"type": 1,
+		"url": "https://fulibus.net/feed"
+	},
+	"be801264-9535-44ab-8b6a-818c28cb1f16": {
+		"id": "be801264-9535-44ab-8b6a-818c28cb1f16",
+		"name": "ghpym",
+		"preNode": "9675f68e-1fbe-4367-b3a1-dbb16b459a09",
+		"type": 1,
+		"url": "https://www.ghpym.com/feed"
+	}
+}

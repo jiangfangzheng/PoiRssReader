@@ -59,6 +59,7 @@ public class SubscibeThread extends Thread {
                 }
             }
             progressBar.setValue(index);
+            label.setText("订阅项：" + nameAndSyndFeedMap.size() + "   总条数：" + sum);
         }
         logger.info("SubscibeThread() run finished.");
 
