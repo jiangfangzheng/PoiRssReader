@@ -174,6 +174,7 @@ public class MainGui {
             DefaultListModel<FeedModel> defaultListModel = new DefaultListModel<>();
             SyndFeed syndFeed = nameAndSyndFeedMap.get(name);
             if (syndFeed == null) {
+                list1.setModel(defaultListModel);
                 return;
             }
             int i = 0;

@@ -7,6 +7,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.rometools.rome.feed.synd.SyndFeed;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -85,7 +86,7 @@ public class RssData {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        idAndSubscibeModelMap = JSON.parseObject(new String(jsonByte),
+        idAndSubscibeModelMap = JSON.parseObject(new String(jsonByte, StandardCharsets.UTF_8),
             new TypeReference<TreeMap<String, SubscibeModel>>() {
             });
     }
