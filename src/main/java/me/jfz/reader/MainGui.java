@@ -84,6 +84,8 @@ public class MainGui {
 
     private JButton button6;
 
+    private JScrollPane scrollPanel2;
+
     public static void main(String[] args) {
         // FlatLightLaf 主题
         FlatLightLaf.install();
@@ -154,8 +156,12 @@ public class MainGui {
         scrollPane1.setViewportView(editorPane1);
         editorPane1.setEditable(false);
         // 设置垂直水平滚动条时刻显示
-        scrollPane1.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane1.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
+        // scrollPane1.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
+        // scrollPane1.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
+
+        scrollPanel2.setViewportView(list1);
+        // scrollPanel2.setVerticalScrollBarPolicy(VERTICAL_SCROLLBAR_ALWAYS);
+        // scrollPanel2.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // 事件处理
         button1.addActionListener(e -> logger.info("所有 按钮被点击"));
@@ -264,7 +270,8 @@ public class MainGui {
             com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL,
             com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
                 | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
-            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, new Dimension(270, -1), 0,
+            false));
         button2 = new JButton();
         button2.setText("Button");
         panel4.add(button2, new com.intellij.uiDesigner.core.GridConstraints(3, 0, 1, 1,
@@ -272,7 +279,8 @@ public class MainGui {
             com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL,
             com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
                 | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
-            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, new Dimension(270, -1), 0,
+            false));
         button3 = new JButton();
         button3.setText("Button");
         panel4.add(button3, new com.intellij.uiDesigner.core.GridConstraints(4, 0, 1, 1,
@@ -280,7 +288,8 @@ public class MainGui {
             com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL,
             com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
                 | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
-            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, new Dimension(270, -1), 0,
+            false));
         label2 = new JLabel();
         label2.setText("Label");
         panel4.add(label2, new com.intellij.uiDesigner.core.GridConstraints(5, 0, 1, 1,
@@ -325,7 +334,7 @@ public class MainGui {
         button6.setText("Button");
         panel5.add(button6, BorderLayout.EAST);
         panel2 = new JPanel();
-        panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel2.setMinimumSize(new Dimension(300, 54));
         panel2.setPreferredSize(new Dimension(300, 54));
         panel3.add(panel2, BorderLayout.CENTER);
@@ -336,6 +345,14 @@ public class MainGui {
             com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW,
             com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(150, 50), null, 0,
             false));
+        scrollPanel2 = new JScrollPane();
+        panel2.add(scrollPanel2, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1,
+            com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER,
+            com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH,
+            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
+                | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW,
+            com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
+                | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new BorderLayout(0, 0));
         panel6.setPreferredSize(new Dimension(300, 24));
