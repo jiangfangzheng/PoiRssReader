@@ -4,12 +4,12 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * 描述
+ * 订阅feed和分类模型
  *
  * @author Sandeepin
  * @since 2020/2/20 0020
  */
-public class SubscibeModel {
+public class SubscibeModel implements Comparable<SubscibeModel> {
     private String id;
 
     private String name;
@@ -97,5 +97,10 @@ public class SubscibeModel {
     @Override
     public int hashCode() {
         return Objects.hash(id, url);
+    }
+
+    @Override
+    public int compareTo(SubscibeModel o) {
+        return this.name.compareTo(o.name);
     }
 }

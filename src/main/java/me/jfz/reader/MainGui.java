@@ -1,11 +1,10 @@
 package me.jfz.reader;
 
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
-import static javax.swing.ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS;
-import static javax.swing.ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS;
 import static me.jfz.reader.RssData.idAndSubscibeModelMap;
-import static me.jfz.reader.RssData.nameAndSyndFeedMap;
+import static me.jfz.reader.RssData.nameAndContentModelsMap;
 
+import me.jfz.reader.model.ContentModel;
 import me.jfz.reader.model.FeedModel;
 import me.jfz.reader.model.SubscibeModel;
 import me.jfz.reader.thread.SubscibeThread;
@@ -24,6 +23,7 @@ import java.awt.Insets;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -177,28 +177,27 @@ public class MainGui {
             String name = e.getPath().getLastPathComponent().toString();
             logger.info("当前被选中的节点:{}", name);
 
-            DefaultListModel<FeedModel> defaultListModel = new DefaultListModel<>();
-            SyndFeed syndFeed = nameAndSyndFeedMap.get(name);
-            if (syndFeed == null) {
+            DefaultListModel<ContentModel> defaultListModel = new DefaultListModel<>();
+            List<ContentModel> contentModels = nameAndContentModelsMap.get(name);
+            if (contentModels == null) {
                 list1.setModel(defaultListModel);
                 return;
             }
             int i = 0;
-            for (SyndEntry entry : syndFeed.getEntries()) {
-                FeedModel feedModel = new FeedModel(entry);
-                defaultListModel.add(i++, feedModel);
+            for (ContentModel contentModel : contentModels) {
+                defaultListModel.add(i++, contentModel);
             }
             list1.setModel(defaultListModel);
         });
         list1.addListSelectionListener(e -> {
             // 设置只有释放鼠标时才触发
             if (!list1.getValueIsAdjusting()) {
-                FeedModel feedModel = (FeedModel) list1.getSelectedValue();
-                if (feedModel == null) {
+                ContentModel contentModel = (ContentModel) list1.getSelectedValue();
+                if (contentModel == null) {
                     logger.error("feedModel is null");
                     return;
                 }
-                logger.info(feedModel.getTitle());
+                logger.info(contentModel.getTitle());
                 File file = new File("./tmpHtml/" + UUID.randomUUID().toString() + ".html");
                 try {
                     FileWriter fw = new FileWriter(file, false);
@@ -206,9 +205,14 @@ public class MainGui {
                     fw.write("<head>");
                     fw.write("</head>");
                     fw.write("<body>");
-                    fw.write("<h1>" + feedModel.getTitle() + "</h1>");
-                    if (feedModel.getSyndEntry().getContents() != null) {
-                        fw.write(feedModel.getSyndEntry().getContents() + "");
+                    fw.write("<h1>" + contentModel.getTitle() + "</h1>");
+                    fw.write("<h1>" + contentModel.getAuthor() + "</h1>");
+                    fw.write("<h1>" + contentModel.getFeedId() + "</h1>");
+                    fw.write("<h1>" + contentModel.getId() + "</h1>");
+                    fw.write("<h1>" + contentModel.getLink() + "</h1>");
+                    fw.write("<h1>" + contentModel.getTime() + "</h1>");
+                    if (contentModel.getContent() != null) {
+                        fw.write(contentModel.getContent());
                     } else {
                         fw.write("");
                         logger.error("feed 文件内容解析失败");

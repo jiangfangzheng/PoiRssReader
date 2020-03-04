@@ -61,5 +61,12 @@
 		"preNode": "9675f68e-1fbe-4367-b3a1-dbb16b459a09",
 		"type": 1,
 		"url": "https://www.ghpym.com/feed"
+	},
+	"be801264-9535-44ab-8b6a-818c28cb1000": {
+		"id": "be801264-9535-44ab-8b6a-818c28cb1000",
+		"name": "月光博客",
+		"preNode": "9675f68e-1fbe-4367-b3a1-dbb16b459a09",
+		"type": 1,
+		"url": "https://www.williamlong.info/rss.xml"
 	}
 }

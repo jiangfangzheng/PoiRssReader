@@ -1,5 +1,6 @@
 package me.jfz.reader;
 
+import me.jfz.reader.model.ContentModel;
 import me.jfz.reader.model.SubscibeModel;
 
 import com.alibaba.fastjson.JSON;
@@ -11,7 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -24,18 +27,18 @@ public class RssData {
 
     public static Map<String, String> nameAndUrl = new HashMap<>(128);
 
-    static {
-        nameAndUrl.put("福利吧", "https://fulibus.net/feed");
-        nameAndUrl.put("阮一峰", "http://www.ruanyifeng.com/blog/atom.xml");
-        nameAndUrl.put("ghpym", "https://www.ghpym.com/feed");
-        nameAndUrl.put("异想萌域", "http://poi.ooo/index.xml");
-        nameAndUrl.put("landiannews", "https://www.landiannews.com/feed");
-        nameAndUrl.put("Sandeepin博客园", "http://feed.cnblogs.com/blog/u/72021/rss/");
-    }
+    // static {
+    //     nameAndUrl.put("福利吧", "https://fulibus.net/feed");
+    //     nameAndUrl.put("阮一峰", "http://www.ruanyifeng.com/blog/atom.xml");
+    //     nameAndUrl.put("ghpym", "https://www.ghpym.com/feed");
+    //     nameAndUrl.put("异想萌域", "http://poi.ooo/index.xml");
+    //     nameAndUrl.put("landiannews", "https://www.landiannews.com/feed");
+    //     nameAndUrl.put("Sandeepin博客园", "http://feed.cnblogs.com/blog/u/72021/rss/");
+    // }
 
-    public static Map<String, SyndFeed> nameAndSyndFeedMap = new HashMap<>(128);
+    public static Map<String, List<ContentModel>> nameAndContentModelsMap = new HashMap<>(128);
 
-    public static Map<String, SubscibeModel> idAndSubscibeModelMap = new HashMap<>(128);
+    public static Map<String, SubscibeModel> idAndSubscibeModelMap;
 
     static {
         // 构造feed
@@ -79,7 +82,10 @@ public class RssData {
         //     e.printStackTrace();
         // }
 
-        // 取json
+        // 反序列化已有的数据
+        // todo
+
+        // 取json中feed重新检查新的订阅
         byte[] jsonByte = new byte[0];
         try {
             jsonByte = Files.readAllBytes(Paths.get("feedData.json"));
@@ -89,6 +95,14 @@ public class RssData {
         idAndSubscibeModelMap = JSON.parseObject(new String(jsonByte, StandardCharsets.UTF_8),
             new TypeReference<TreeMap<String, SubscibeModel>>() {
             });
+
+        nameAndUrl.clear();
+        for (SubscibeModel subscibeModel : idAndSubscibeModelMap.values()) {
+            if (subscibeModel.getType() == 1) {
+                nameAndUrl.put(subscibeModel.getName(), subscibeModel.getUrl());
+            }
+        }
+
     }
 
 }

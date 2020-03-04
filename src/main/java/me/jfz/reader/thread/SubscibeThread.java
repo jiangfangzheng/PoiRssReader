@@ -1,8 +1,11 @@
 package me.jfz.reader.thread;
 
-import static me.jfz.reader.RssData.nameAndSyndFeedMap;
+import static me.jfz.reader.RssData.nameAndContentModelsMap;
 import static me.jfz.reader.RssData.nameAndUrl;
 
+import me.jfz.reader.model.ContentModel;
+
+import com.rometools.rome.feed.synd.SyndEntry;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -11,7 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -51,7 +58,14 @@ public class SubscibeThread extends Thread {
                 try {
                     try (XmlReader reader = new XmlReader(new URL(url))) {
                         SyndFeed feed = new SyndFeedInput().build(reader);
-                        nameAndSyndFeedMap.put(name, feed);
+                        List<ContentModel> contentModels = new ArrayList<>();
+                        for (SyndEntry entry : feed.getEntries()) {
+                            ContentModel feedModel = new ContentModel(name,  entry.getTitle(),entry.getLink(),entry.getAuthor(), entry.getPublishedDate() + "",  entry.getDescription()+ "~"+entry.getContents() );
+                           if (!contentModels.contains(feedModel)) {
+                               contentModels.add(feedModel);
+                           }
+                        }
+                        nameAndContentModelsMap.put(name, contentModels);
                         sum += feed.getEntries().size();
                     }
                 } catch (Exception e) {
@@ -59,10 +73,10 @@ public class SubscibeThread extends Thread {
                 }
             }
             progressBar.setValue(index);
-            label.setText("订阅项：" + nameAndSyndFeedMap.size() + "   总条数：" + sum);
+            label.setText("订阅项：" + nameAndContentModelsMap.size() + "   总条数：" + sum);
         }
         logger.info("SubscibeThread() run finished.");
 
-        label.setText("订阅项：" + nameAndSyndFeedMap.size() + "   总条数：" + sum);
+        label.setText("订阅项：" + nameAndContentModelsMap.size() + "   总条数：" + sum);
     }
 }
