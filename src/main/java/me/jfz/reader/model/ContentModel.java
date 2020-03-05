@@ -1,5 +1,6 @@
 package me.jfz.reader.model;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -9,7 +10,7 @@ import java.util.UUID;
  * @author Sandeepin
  * @since 2020/3/4 0004
  */
-public class ContentModel implements Comparable<ContentModel> {
+public class ContentModel implements Comparable<ContentModel>, Serializable {
 
     private String id;
 

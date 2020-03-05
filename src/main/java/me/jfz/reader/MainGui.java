@@ -3,15 +3,13 @@ package me.jfz.reader;
 import static javax.swing.JFrame.EXIT_ON_CLOSE;
 import static me.jfz.reader.RssData.idAndSubscibeModelMap;
 import static me.jfz.reader.RssData.nameAndContentModelsMap;
+import static me.jfz.reader.RssData.serializeNameAndContentModelsMap;
 
 import me.jfz.reader.model.ContentModel;
-import me.jfz.reader.model.FeedModel;
 import me.jfz.reader.model.SubscibeModel;
 import me.jfz.reader.thread.SubscibeThread;
 
 import com.formdev.flatlaf.FlatLightLaf;
-import com.rometools.rome.feed.synd.SyndEntry;
-import com.rometools.rome.feed.synd.SyndFeed;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +18,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -94,11 +94,19 @@ public class MainGui {
         JFrame frame = new JFrame("PoiRssReader");
         MainGui mainGui = new MainGui();
         frame.setContentPane(mainGui.panel1);
-        frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
         frame.setSize(1850, 975);
         // 一个很简单就能让窗体居中的方法, 当参数为null时窗体处于屏幕正中
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+        // frame.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                serializeNameAndContentModelsMap();
+                logger.warn("窗口关闭，程序关闭！");
+                System.exit(0);
+            }
+        });
         JComponent[] jComponents = {mainGui.label2, mainGui.progressBar1};
 
         // 界面自定义的一些初始化
@@ -115,39 +123,10 @@ public class MainGui {
 
     private void createUIComponents(JComponent[] jComponents) {
         // 界面文字
-        label1.setText("概览");
-        label2.setText("订阅项：0   总条数：0");
-        button1.setText("所有  ( ... )");
-        button2.setText("未读  ( ... )");
-        button3.setText("星标  ( ... )");
-        button4.setText("刷新");
-        button5.setText("新增订阅...");
-        button6.setText("搜索...");
+        setUiInitTextMsg();
 
         // JTree动态加载RSS订阅源
-        // 创建根节点
-        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new SubscibeModel("root", "所有订阅", "", -1, null));
-
-        // 2级节点
-        Set<SubscibeModel> collectType = idAndSubscibeModelMap.values()
-            .stream()
-            .filter(e -> e.getType() == 0)
-            .collect(Collectors.toSet());
-        for (SubscibeModel typeModel : collectType) {
-            DefaultMutableTreeNode tmp2Node = new DefaultMutableTreeNode(typeModel);
-            // 3级节点
-            Set<SubscibeModel> subscibeModelSet = idAndSubscibeModelMap.values()
-                .stream()
-                .filter(e -> e.getType() == 1)
-                .filter(e -> e.getPreNode().equals(typeModel.getId()))
-                .collect(Collectors.toSet());
-            for (SubscibeModel sub : subscibeModelSet) {
-                tmp2Node.add(new DefaultMutableTreeNode(sub));
-            }
-            rootNode.add(tmp2Node);
-        }
-
-        TreeModel newModel = new DefaultTreeModel(rootNode);
+        TreeModel newModel = getJTreeClassFeedModelData();
         tree1.setModel(newModel);
 
         // 文章列表容器加边框区别
@@ -230,6 +209,48 @@ public class MainGui {
             }
         });
 
+    }
+
+    private void setUiInitTextMsg() {
+        label1.setText("概览");
+        label2.setText("订阅项：0   总条数：0");
+        button1.setText("所有  ( ... )");
+        button2.setText("未读  ( ... )");
+        button3.setText("星标  ( ... )");
+        button4.setText("刷新");
+        button5.setText("新增订阅...");
+        button6.setText("搜索...");
+    }
+
+    /**
+     * 生成JTree中的数据，包括分类、订阅源列表
+     *
+     * @return reeModel
+     */
+    private TreeModel getJTreeClassFeedModelData() {
+        // 创建根节点
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new SubscibeModel("root", "所有订阅", "", -1, null));
+
+        // 2级节点
+        Set<SubscibeModel> collectType = idAndSubscibeModelMap.values()
+            .stream()
+            .filter(e -> e.getType() == 0)
+            .collect(Collectors.toSet());
+        for (SubscibeModel typeModel : collectType) {
+            DefaultMutableTreeNode tmp2Node = new DefaultMutableTreeNode(typeModel);
+            // 3级节点
+            Set<SubscibeModel> subscibeModelSet = idAndSubscibeModelMap.values()
+                .stream()
+                .filter(e -> e.getType() == 1)
+                .filter(e -> e.getPreNode().equals(typeModel.getId()))
+                .collect(Collectors.toSet());
+            for (SubscibeModel sub : subscibeModelSet) {
+                tmp2Node.add(new DefaultMutableTreeNode(sub));
+            }
+            rootNode.add(tmp2Node);
+        }
+
+        return new DefaultTreeModel(rootNode);
     }
 
     {

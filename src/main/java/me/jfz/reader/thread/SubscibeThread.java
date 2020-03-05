@@ -65,8 +65,14 @@ public class SubscibeThread extends Thread {
                                contentModels.add(feedModel);
                            }
                         }
-                        nameAndContentModelsMap.put(name, contentModels);
-                        sum += feed.getEntries().size();
+                        List<ContentModel> oldContentModels = nameAndContentModelsMap.get(name);
+                        if (oldContentModels == null) {
+                            nameAndContentModelsMap.put(name, contentModels);
+                            oldContentModels = contentModels;
+                        } else {
+                            oldContentModels.addAll(contentModels);
+                        }
+                        sum += oldContentModels.size();
                     }
                 } catch (Exception e) {
                     logger.error("SubscibeThread() run Exception:", e);
