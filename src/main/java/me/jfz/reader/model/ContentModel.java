@@ -116,6 +116,11 @@ public class ContentModel implements Comparable<ContentModel>, Serializable {
 
     @Override
     public int compareTo(ContentModel o) {
-        return this.link.compareTo(o.link);
+        if (!Objects.equals(this.time, o.time)) {
+            // 时间倒序
+            return o.time.compareTo(this.time);
+        }
+        // 字典顺序顺序
+        return this.title.compareTo(o.title);
     }
 }

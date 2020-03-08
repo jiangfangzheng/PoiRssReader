@@ -1,7 +1,8 @@
 package me.jfz.reader.thread;
 
-import static me.jfz.reader.RssData.nameAndContentModelsMap;
-import static me.jfz.reader.RssData.nameAndUrl;
+import static me.jfz.reader.data.ConstData.DATE_FORMAT;
+import static me.jfz.reader.data.RssData.nameAndContentModelsMap;
+import static me.jfz.reader.data.RssData.nameAndUrl;
 
 import me.jfz.reader.model.ContentModel;
 
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +51,8 @@ public class SubscibeThread extends Thread {
         progressBar.setMaximum(nameAndUrl.size());
         progressBar.setValue(0);
 
+
+
         int index = 0;
         int sum = 0;
         for (Map.Entry<String, String> entry1 : nameAndUrl.entrySet()) {
@@ -56,16 +61,20 @@ public class SubscibeThread extends Thread {
             String url = entry1.getValue();
             if (url != null) {
                 try {
+                    // 从feed源中读取最新文章
                     try (XmlReader reader = new XmlReader(new URL(url))) {
                         SyndFeed feed = new SyndFeedInput().build(reader);
-                        List<ContentModel> contentModels = new ArrayList<>();
+                        Set<ContentModel> contentModels = new TreeSet<>();
                         for (SyndEntry entry : feed.getEntries()) {
-                            ContentModel feedModel = new ContentModel(name,  entry.getTitle(),entry.getLink(),entry.getAuthor(), entry.getPublishedDate() + "",  entry.getDescription()+ "~"+entry.getContents() );
-                           if (!contentModels.contains(feedModel)) {
-                               contentModels.add(feedModel);
-                           }
+
+                            ContentModel feedModel = new ContentModel(name, entry.getTitle(), entry.getLink(),
+                                entry.getAuthor(),  DATE_FORMAT.format(entry.getPublishedDate()),
+                                entry.getDescription() + "~" + entry.getContents());
+                            if (!contentModels.contains(feedModel)) {
+                                contentModels.add(feedModel);
+                            }
                         }
-                        List<ContentModel> oldContentModels = nameAndContentModelsMap.get(name);
+                        Set<ContentModel> oldContentModels = nameAndContentModelsMap.get(name);
                         if (oldContentModels == null) {
                             nameAndContentModelsMap.put(name, contentModels);
                             oldContentModels = contentModels;

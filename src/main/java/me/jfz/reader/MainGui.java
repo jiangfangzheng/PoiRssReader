@@ -1,9 +1,8 @@
 package me.jfz.reader;
 
-import static javax.swing.JFrame.EXIT_ON_CLOSE;
-import static me.jfz.reader.RssData.idAndSubscibeModelMap;
-import static me.jfz.reader.RssData.nameAndContentModelsMap;
-import static me.jfz.reader.RssData.serializeNameAndContentModelsMap;
+import static me.jfz.reader.data.RssData.idAndSubscibeModelMap;
+import static me.jfz.reader.data.RssData.nameAndContentModelsMap;
+import static me.jfz.reader.data.RssData.serializeNameAndContentModelsMap;
 
 import me.jfz.reader.model.ContentModel;
 import me.jfz.reader.model.SubscibeModel;
@@ -157,7 +156,7 @@ public class MainGui {
             logger.info("当前被选中的节点:{}", name);
 
             DefaultListModel<ContentModel> defaultListModel = new DefaultListModel<>();
-            List<ContentModel> contentModels = nameAndContentModelsMap.get(name);
+            Set<ContentModel> contentModels = nameAndContentModelsMap.get(name);
             if (contentModels == null) {
                 list1.setModel(defaultListModel);
                 return;

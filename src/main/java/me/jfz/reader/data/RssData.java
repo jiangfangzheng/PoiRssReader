@@ -1,4 +1,4 @@
-package me.jfz.reader;
+package me.jfz.reader.data;
 
 import me.jfz.reader.model.ContentModel;
 import me.jfz.reader.model.SubscibeModel;
@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -38,7 +39,7 @@ public final class RssData {
     /**
      * feed名和内容列表，数据需要序列化保存
      */
-    public static Map<String, List<ContentModel>> nameAndContentModelsMap = new HashMap<>(128);
+    public static Map<String, Set<ContentModel>> nameAndContentModelsMap = new HashMap<>(128);
 
     /**
      * feed id和订阅模型（分类、feed源），从json中读取
@@ -60,11 +61,11 @@ public final class RssData {
         }
     }
 
-    public static void getSubscribeModelMapFromJson(Map<String, SubscibeModel> idAndSubscibeModelMap) {
+    public static void getSubscribeModelMapFromJson(String jsonFileName, Map<String, SubscibeModel> idAndSubscibeModelMap) {
         byte[] jsonByte;
         Map<String, SubscibeModel> tmpMap = new HashMap<>();
         try {
-            jsonByte = Files.readAllBytes(Paths.get("feedData.json"));
+            jsonByte = Files.readAllBytes(Paths.get(jsonFileName));
             tmpMap = JSON.parseObject(new String(jsonByte, StandardCharsets.UTF_8),
                 new TypeReference<TreeMap<String, SubscibeModel>>() {
                 });
@@ -92,13 +93,14 @@ public final class RssData {
     public static void deserializeNameAndContentModelsMap() {
         try (FileInputStream fileIn = new FileInputStream(SERIALIZE_CONTENTMODELS_MAP_FILE);
             ObjectInputStream in = new ObjectInputStream(fileIn);) {
-            Map<String, List<ContentModel>> tmp = (Map<String, List<ContentModel>>) in.readObject();
+            Map<String, Set<ContentModel>> tmp = (Map<String, Set<ContentModel>>) in.readObject();
             if (tmp != null) {
                 nameAndContentModelsMap.putAll(tmp);
                 logger.error("Deserialized nameAndContentModelsMap OK!");
             }
         } catch (FileNotFoundException f) {
-            logger.error("Deserialized nameAndContentModelsMap FileNotFoundException:", f);
+            logger.error("Deserialized nameAndContentModelsMap FileNotFoundException:", f.getMessage());
+            logger.warn("未找到{}，不读取之前存储的文件。", SERIALIZE_CONTENTMODELS_MAP_FILE);
         } catch (IOException i) {
             logger.error("Deserialized nameAndContentModelsMap IOException:", i);
         } catch (ClassNotFoundException c) {
