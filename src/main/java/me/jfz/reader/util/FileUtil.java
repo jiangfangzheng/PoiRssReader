@@ -22,7 +22,7 @@ public final class FileUtil {
         File dir = new File(dirName);
         if (!dir.exists()) {
             boolean b = dir.mkdirs();
-            logger.warn("创建目录tmpHtml：{}", b);
+            logger.warn("创建目录:{}", b);
         }
     }
 }

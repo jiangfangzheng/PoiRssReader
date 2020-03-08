@@ -31,9 +31,6 @@ public class Main {
     private static void init() {
         logger.info("init()");
 
-        // 创建临时html目录，存储每篇文章的渲染样式
-        FileUtil.mkDirs("./tmpHtml/");
-
         // 反序列化已有的内容数据
         deserializeNameAndContentModelsMap();
 

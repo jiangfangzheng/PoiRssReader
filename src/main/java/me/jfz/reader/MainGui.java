@@ -19,12 +19,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
@@ -176,35 +171,14 @@ public class MainGui {
                     return;
                 }
                 logger.info(contentModel.getTitle());
-                File file = new File("./tmpHtml/" + UUID.randomUUID().toString() + ".html");
-                try {
-                    FileWriter fw = new FileWriter(file, false);
-                    fw.write("<html>");
-                    fw.write("<head>");
-                    fw.write("</head>");
-                    fw.write("<body>");
-                    fw.write("<h1>" + contentModel.getTitle() + "</h1>");
-                    fw.write("<h1>" + contentModel.getAuthor() + "</h1>");
-                    fw.write("<h1>" + contentModel.getFeedId() + "</h1>");
-                    fw.write("<h1>" + contentModel.getId() + "</h1>");
-                    fw.write("<h1>" + contentModel.getLink() + "</h1>");
-                    fw.write("<h1>" + contentModel.getTime() + "</h1>");
-                    if (contentModel.getContent() != null) {
-                        fw.write(contentModel.getContent());
-                    } else {
-                        fw.write("");
-                        logger.error("feed 文件内容解析失败");
-                    }
-                    fw.write("</body></html>");
-                    //清理操作
-                    fw.flush();
-                    fw.close();
-                    String str = file.getAbsolutePath();
-                    str = "file:" + str;
-                    editorPane1.setPage(str);
-                } catch (IOException ex) {
-                    logger.error("IOException:", ex);
-                }
+                // html字符串直接显示
+                String content = "<html><head></head><body>" + "<h1>" + contentModel.getTitle() + "</h1>" + "<h1>"
+                    + contentModel.getAuthor() + "</h1>" + "<h1>" + contentModel.getFeedId() + "</h1>" + "<h1>"
+                    + contentModel.getId() + "</h1>" + "<h1>" + contentModel.getLink() + "</h1>" + "<h1>" + contentModel
+                    .getUpdateTime() + "</h1>" + "<h1>" + contentModel.getTime() + "</h1>" + contentModel.getContent()
+                    + "</body></html>";
+                editorPane1.setContentType("text/html");
+                editorPane1.setText(content);
             }
         });
 

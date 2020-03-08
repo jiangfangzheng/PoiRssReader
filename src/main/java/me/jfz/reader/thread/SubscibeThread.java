@@ -15,10 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -51,8 +48,6 @@ public class SubscibeThread extends Thread {
         progressBar.setMaximum(nameAndUrl.size());
         progressBar.setValue(0);
 
-
-
         int index = 0;
         int sum = 0;
         for (Map.Entry<String, String> entry1 : nameAndUrl.entrySet()) {
@@ -66,15 +61,26 @@ public class SubscibeThread extends Thread {
                         SyndFeed feed = new SyndFeedInput().build(reader);
                         Set<ContentModel> contentModels = new TreeSet<>();
                         for (SyndEntry entry : feed.getEntries()) {
-
+                            // 发布时间
+                            Date publishedDate = entry.getPublishedDate();
+                            String publishedTime = "";
+                            if (publishedDate != null) {
+                                publishedTime = DATE_FORMAT.format(publishedDate);
+                            }
+                            // 更新时间
+                            Date updatedDate = entry.getUpdatedDate();
+                            String updatedTime = "";
+                            if (updatedDate != null) {
+                                updatedTime = DATE_FORMAT.format(updatedDate);
+                            }
+                            // 构造文章模型
                             ContentModel feedModel = new ContentModel(name, entry.getTitle(), entry.getLink(),
-                                entry.getAuthor(),  DATE_FORMAT.format(entry.getPublishedDate()),
+                                entry.getAuthor(), publishedTime, updatedTime,
                                 entry.getDescription() + "~" + entry.getContents());
                             if (!contentModels.contains(feedModel)) {
                                 contentModels.add(feedModel);
                             }
-                        }
-                        Set<ContentModel> oldContentModels = nameAndContentModelsMap.get(name);
+                        } Set<ContentModel> oldContentModels = nameAndContentModelsMap.get(name);
                         if (oldContentModels == null) {
                             nameAndContentModelsMap.put(name, contentModels);
                             oldContentModels = contentModels;
@@ -86,11 +92,9 @@ public class SubscibeThread extends Thread {
                 } catch (Exception e) {
                     logger.error("SubscibeThread() run Exception:", e);
                 }
-            }
-            progressBar.setValue(index);
+            } progressBar.setValue(index);
             label.setText("订阅项：" + nameAndContentModelsMap.size() + "   总条数：" + sum);
-        }
-        logger.info("SubscibeThread() run finished.");
+        } logger.info("SubscibeThread() run finished.");
 
         label.setText("订阅项：" + nameAndContentModelsMap.size() + "   总条数：" + sum);
     }

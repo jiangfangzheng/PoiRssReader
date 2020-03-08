@@ -24,16 +24,22 @@ public class ContentModel implements Comparable<ContentModel>, Serializable {
 
     private String time;
 
+    private String updateTime;
+
     private String content;
 
-    public ContentModel(String feedId, String title, String link, String author, String time, String content) {
+    private boolean isStar;
+
+    public ContentModel(String feedId, String title, String link, String author, String time, String updateTime, String content) {
         this.id = UUID.randomUUID().toString();
         this.feedId = feedId;
         this.title = title;
         this.link = link;
         this.author = author;
         this.time = time;
+        this.updateTime = updateTime;
         this.content = content;
+        this.isStar = false;
     }
 
     public String getId() {
@@ -122,5 +128,21 @@ public class ContentModel implements Comparable<ContentModel>, Serializable {
         }
         // 字典顺序顺序
         return this.title.compareTo(o.title);
+    }
+
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public boolean isStar() {
+        return isStar;
+    }
+
+    public void setStar(boolean star) {
+        isStar = star;
     }
 }
