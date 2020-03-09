@@ -15,7 +15,9 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -23,6 +25,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -34,6 +37,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.ListCellRenderer;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -115,6 +119,30 @@ public class MainGui {
         thread.start();
     }
 
+    static class MyCellRenderer extends DefaultListCellRenderer {
+        // JLst渲染器
+        // list - 正在绘制的 JList,
+        // value - 由 list.getModel().getElementAt(index) 返回的值,
+        // index - 单元格索引。
+        // isSelected - 如果选择了指定的单元格，则为 true。
+        // cellHasFocus - 如果指定的单元格拥有焦点，则为 true。
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+            boolean cellHasFocus) {
+            Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            if (value instanceof ContentModel) {
+                ContentModel contentModel = (ContentModel) value;
+                System.out.println(index + " isRead " + contentModel.isRead());
+                if (contentModel.isRead()) {
+                    c.setFont(c.getFont().deriveFont(Font.PLAIN));
+                } else {
+                    c.setFont(c.getFont().deriveFont(Font.BOLD));
+                }
+            }
+            return c;
+        }
+    }
+
     private void createUIComponents(JComponent[] jComponents) {
         // 界面文字
         setUiInitTextMsg();
@@ -160,6 +188,10 @@ public class MainGui {
             for (ContentModel contentModel : contentModels) {
                 defaultListModel.add(i++, contentModel);
             }
+            // 加载样式
+            MyCellRenderer myCellRenderer = new MyCellRenderer();
+            list1.setCellRenderer(
+                (ListCellRenderer) myCellRenderer.getListCellRendererComponent(list1, "", 0, true, true));
             list1.setModel(defaultListModel);
         });
         list1.addListSelectionListener(e -> {
@@ -170,18 +202,33 @@ public class MainGui {
                     logger.error("feedModel is null");
                     return;
                 }
-                logger.info(contentModel.getTitle());
+                contentModel.setRead(true);
+                logger.info("点击文章:{}", contentModel.getTitle());
                 // html字符串直接显示
-                String content = "<html><head></head><body>" + "<h1>" + contentModel.getTitle() + "</h1>" + "<h1>"
-                    + contentModel.getAuthor() + "</h1>" + "<h1>" + contentModel.getFeedId() + "</h1>" + "<h1>"
-                    + contentModel.getId() + "</h1>" + "<h1>" + contentModel.getLink() + "</h1>" + "<h1>" + contentModel
-                    .getUpdateTime() + "</h1>" + "<h1>" + contentModel.getTime() + "</h1>" + contentModel.getContent()
-                    + "</body></html>";
+                String content = contentModel2Html(contentModel);
                 editorPane1.setContentType("text/html");
                 editorPane1.setText(content);
             }
         });
 
+    }
+
+    /**
+     * ContentModel转HTML样式
+     *
+     * @param contentModel contentModel
+     * @return HTML String
+     */
+    private String contentModel2Html(ContentModel contentModel) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<html><head></head><body>");
+        stringBuilder.append("<h1>" + contentModel.getTitle() + "</h1>");
+        stringBuilder.append("<h3>作者：" + contentModel.getAuthor() + " 时间：" + contentModel.getTime() + "</h3>");
+        stringBuilder.append("<h3>链接：" + contentModel.getLink() + "</h3>");
+        stringBuilder.append("<h2>正文：</h2>");
+        stringBuilder.append(contentModel.getContent());
+        stringBuilder.append("</body></html>");
+        return stringBuilder.toString();
     }
 
     private void setUiInitTextMsg() {

@@ -6,8 +6,6 @@ import static me.jfz.reader.data.RssData.getUrlMapFromSubscribeMap;
 import static me.jfz.reader.data.RssData.idAndSubscibeModelMap;
 import static me.jfz.reader.data.RssData.nameAndUrl;
 
-import me.jfz.reader.util.FileUtil;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

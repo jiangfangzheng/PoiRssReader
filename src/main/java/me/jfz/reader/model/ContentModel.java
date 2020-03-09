@@ -12,6 +12,8 @@ import java.util.UUID;
  */
 public class ContentModel implements Comparable<ContentModel>, Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     private String id;
 
     private String feedId;
@@ -30,7 +32,10 @@ public class ContentModel implements Comparable<ContentModel>, Serializable {
 
     private boolean isStar;
 
-    public ContentModel(String feedId, String title, String link, String author, String time, String updateTime, String content) {
+    private boolean isRead;
+
+    public ContentModel(String feedId, String title, String link, String author, String time, String updateTime,
+        String content) {
         this.id = UUID.randomUUID().toString();
         this.feedId = feedId;
         this.title = title;
@@ -40,6 +45,7 @@ public class ContentModel implements Comparable<ContentModel>, Serializable {
         this.updateTime = updateTime;
         this.content = content;
         this.isStar = false;
+        this.isRead = false;
     }
 
     public String getId() {
@@ -98,6 +104,30 @@ public class ContentModel implements Comparable<ContentModel>, Serializable {
         this.content = content;
     }
 
+    public String getUpdateTime() {
+        return updateTime;
+    }
+
+    public void setUpdateTime(String updateTime) {
+        this.updateTime = updateTime;
+    }
+
+    public boolean isStar() {
+        return isStar;
+    }
+
+    public void setStar(boolean star) {
+        isStar = star;
+    }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        isRead = read;
+    }
+
     @Override
     public String toString() {
         return title;
@@ -128,21 +158,5 @@ public class ContentModel implements Comparable<ContentModel>, Serializable {
         }
         // 字典顺序顺序
         return this.title.compareTo(o.title);
-    }
-
-    public String getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(String updateTime) {
-        this.updateTime = updateTime;
-    }
-
-    public boolean isStar() {
-        return isStar;
-    }
-
-    public void setStar(boolean star) {
-        isStar = star;
     }
 }
