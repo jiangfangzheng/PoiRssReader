@@ -19,6 +19,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Set;
@@ -33,7 +37,9 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -132,7 +138,7 @@ public class MainGui {
             Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             if (value instanceof ContentModel) {
                 ContentModel contentModel = (ContentModel) value;
-                System.out.println(index + " isRead " + contentModel.isRead());
+                // System.out.println(index + " isRead " + contentModel.isRead());
                 if (contentModel.isRead()) {
                     c.setFont(c.getFont().deriveFont(Font.PLAIN));
                 } else {
@@ -140,6 +146,34 @@ public class MainGui {
                 }
             }
             return c;
+        }
+    }
+
+    static class myJListListener extends MouseAdapter {
+
+        private JList list1;
+
+        private JPopupMenu jPopupMenu;
+
+        public myJListListener(JList list1, JPopupMenu jPopupMenu) {
+            this.list1 = list1;
+            this.jPopupMenu = jPopupMenu;
+        }
+
+        //e.getButton() 返回值有 1，2，3。1代表鼠标左键，3代表鼠标右键
+        //jList.getSelected() 返回的是选中的JList中的项数。
+        //if语句的意思也就是，在JList 中点击了右键而且JList选中了某项，显示右键菜单
+        //e.getX() , e.getY() 返回的是鼠标目前的位置！也就是在目前鼠标的位置上弹出右键
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            // System.out.println(e.getButton());
+            // System.out.println(list1.getSelectedIndex());
+            if (e.getButton() == 3 && list1.getSelectedIndex() >= 0) {
+                ContentModel contentModel = (ContentModel) list1.getSelectedValue();
+                System.out.println("isRead " + contentModel.isRead());
+                System.out.println("isStar " + contentModel.isStar());
+                jPopupMenu.show(list1, e.getX(), e.getY());
+            }
         }
     }
 
@@ -189,11 +223,30 @@ public class MainGui {
                 defaultListModel.add(i++, contentModel);
             }
             // 加载样式
-            MyCellRenderer myCellRenderer = new MyCellRenderer();
-            list1.setCellRenderer(
-                (ListCellRenderer) myCellRenderer.getListCellRendererComponent(list1, "", 0, true, true));
             list1.setModel(defaultListModel);
         });
+        MyCellRenderer myCellRenderer = new MyCellRenderer();
+        list1.setCellRenderer((ListCellRenderer) myCellRenderer.getListCellRendererComponent(list1, "", 0, true, true));
+
+        JPopupMenu jPopupMenu = new JPopupMenu();
+        JMenuItem starMenuItem = new JMenuItem("添加星标");
+        JMenuItem unreadMenuItem = new JMenuItem("标记为未读");
+        jPopupMenu.add(starMenuItem);
+        jPopupMenu.add(unreadMenuItem);
+
+        // 添加菜单项的点击监听器
+        starMenuItem.addActionListener(e -> {
+            ContentModel contentModel = (ContentModel) list1.getSelectedValue();
+            contentModel.setStar(true);
+            System.out.println("添加星标 被点击");
+        });
+        unreadMenuItem.addActionListener(e -> {
+            ContentModel contentModel = (ContentModel) list1.getSelectedValue();
+            contentModel.setRead(false);
+            System.out.println("标记为未读 被点击");
+        });
+        list1.add(jPopupMenu);
+        list1.addMouseListener(new myJListListener(list1, jPopupMenu));
         list1.addListSelectionListener(e -> {
             // 设置只有释放鼠标时才触发
             if (!list1.getValueIsAdjusting()) {
