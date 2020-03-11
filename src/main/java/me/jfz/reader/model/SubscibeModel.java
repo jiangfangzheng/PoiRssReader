@@ -14,11 +14,16 @@ public class SubscibeModel implements Comparable<SubscibeModel> {
 
     private String name;
 
+    // 首页
+    private String home;
+
+    // feed url
     private String url;
 
-    // -1根 0分类 1订阅源
+    // 类型：-1根 0分类 1订阅源
     private int type;
 
+    // 树形结构上一级分类
     private String preNode;
 
     public SubscibeModel(String id, String name, String url, int type, String preNode) {
@@ -102,5 +107,13 @@ public class SubscibeModel implements Comparable<SubscibeModel> {
     @Override
     public int compareTo(SubscibeModel o) {
         return this.name.compareTo(o.name);
+    }
+
+    public String getHome() {
+        return home;
+    }
+
+    public void setHome(String home) {
+        this.home = home;
     }
 }

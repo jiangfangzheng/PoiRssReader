@@ -36,7 +36,7 @@ public class Main {
         getSubscribeModelMapFromJson("feedData.json", idAndSubscibeModelMap);
 
         // SubscibeModel数据转为nameAndUrl Map存储
-        getUrlMapFromSubscribeMap(nameAndUrl, idAndSubscibeModelMap);
+        getUrlMapFromSubscribeMap(idAndSubscibeModelMap, nameAndUrl);
     }
 
 }

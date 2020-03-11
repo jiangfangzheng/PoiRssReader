@@ -1,8 +1,11 @@
 package me.jfz.reader;
 
+import static me.jfz.reader.data.RssData.allSubscribeCount;
 import static me.jfz.reader.data.RssData.idAndSubscibeModelMap;
 import static me.jfz.reader.data.RssData.nameAndContentModelsMap;
 import static me.jfz.reader.data.RssData.serializeNameAndContentModelsMap;
+import static me.jfz.reader.data.RssData.unreadSubscribeCount;
+import static me.jfz.reader.data.RssData.unstarSubscribeCount;
 
 import me.jfz.reader.model.ContentModel;
 import me.jfz.reader.model.SubscibeModel;
@@ -19,8 +22,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -44,6 +45,7 @@ import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.ListCellRenderer;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeModel;
@@ -264,6 +266,19 @@ public class MainGui {
             }
         });
 
+        // 超链接点击事件
+        editorPane1.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                try {
+                    // todo 此写法并未跨平台
+                    String command = "explorer.exe " + e.getURL().toString();
+                    Runtime.getRuntime().exec(command);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
     }
 
     /**
@@ -276,8 +291,9 @@ public class MainGui {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("<html><head></head><body>");
         stringBuilder.append("<h1>" + contentModel.getTitle() + "</h1>");
-        stringBuilder.append("<h3>作者：" + contentModel.getAuthor() + " 时间：" + contentModel.getTime() + "</h3>");
-        stringBuilder.append("<h3>链接：" + contentModel.getLink() + "</h3>");
+        stringBuilder.append("<h3>时间：" + contentModel.getTime() + "　　作者：" + contentModel.getAuthor() + "</h3>");
+        stringBuilder.append(
+            "<h3>链接：<a href=\"" + contentModel.getLink() + "\">" + contentModel.getLink() + "</a></h3>");
         stringBuilder.append("<h2>正文：</h2>");
         stringBuilder.append(contentModel.getContent());
         stringBuilder.append("</body></html>");
@@ -287,9 +303,9 @@ public class MainGui {
     private void setUiInitTextMsg() {
         label1.setText("概览");
         label2.setText("订阅项：0   总条数：0");
-        button1.setText("所有  ( ... )");
-        button2.setText("未读  ( ... )");
-        button3.setText("星标  ( ... )");
+        button1.setText("所有  ( " + allSubscribeCount() + " )");
+        button2.setText("未读  ( " + unreadSubscribeCount() + " )");
+        button3.setText("星标  ( " + unstarSubscribeCount() + " )");
         button4.setText("刷新");
         button5.setText("新增订阅...");
         button6.setText("搜索...");

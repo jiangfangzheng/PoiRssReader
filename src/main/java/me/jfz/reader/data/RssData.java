@@ -18,11 +18,13 @@ import java.io.ObjectOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collector;
 
 /**
  * 描述
@@ -51,17 +53,22 @@ public final class RssData {
      */
     public static Map<String, String> nameAndUrl = new HashMap<>(128);
 
-    public static void getUrlMapFromSubscribeMap(Map<String, String> nameAndUrl,
-        Map<String, SubscibeModel> idAndSubscibeModelMap) {
-        nameAndUrl.clear();
-        for (SubscibeModel subscibeModel : idAndSubscibeModelMap.values()) {
-            if (subscibeModel.getType() == 1) {
-                nameAndUrl.put(subscibeModel.getName(), subscibeModel.getUrl());
-            }
-        }
+    /**
+     * idAndSubscibeModelMap中提取feed地址（Type = 1）
+     *
+     * @param idAndSubscibeModelMap idAndSubscibeModelMap
+     * @param nameAndUrl            nameAndUrl
+     */
+    public static void getUrlMapFromSubscribeMap(Map<String, SubscibeModel> idAndSubscibeModelMap,
+        Map<String, String> nameAndUrl) {
+        idAndSubscibeModelMap.values()
+            .stream()
+            .filter(e -> e.getType() == 1)
+            .forEach(e -> nameAndUrl.put(e.getName(), e.getUrl()));
     }
 
-    public static void getSubscribeModelMapFromJson(String jsonFileName, Map<String, SubscibeModel> idAndSubscibeModelMap) {
+    public static void getSubscribeModelMapFromJson(String jsonFileName,
+        Map<String, SubscibeModel> idAndSubscibeModelMap) {
         byte[] jsonByte;
         Map<String, SubscibeModel> tmpMap = new HashMap<>();
         try {
@@ -106,6 +113,39 @@ public final class RssData {
         } catch (ClassNotFoundException c) {
             logger.error("Deserialized nameAndContentModelsMap ClassNotFoundException:", c);
         }
+    }
+
+    /**
+     * 订阅的文章总篇数
+     *
+     * @return int
+     */
+    public static int allSubscribeCount() {
+        Set<ContentModel> subscibeModelSet = new HashSet<>();
+        nameAndContentModelsMap.values().stream().forEach(e->e.stream().forEach(e1->subscibeModelSet.add(e1)));
+        return subscibeModelSet.size();
+    }
+
+    /**
+     * 未读订阅的文章总篇数
+     *
+     * @return int
+     */
+    public static int unreadSubscribeCount() {
+        Set<ContentModel> subscibeModelSet = new HashSet<>();
+        nameAndContentModelsMap.values().stream().forEach(e->e.stream().forEach(e1->subscibeModelSet.add(e1)));
+        return (int) subscibeModelSet.stream().filter(e -> !e.isRead()).count();
+    }
+
+    /**
+     * 星标订阅的文章总篇数
+     *
+     * @return int
+     */
+    public static int unstarSubscribeCount() {
+        Set<ContentModel> subscibeModelSet = new HashSet<>();
+        nameAndContentModelsMap.values().stream().forEach(e->e.stream().forEach(e1->subscibeModelSet.add(e1)));
+        return (int) subscibeModelSet.stream().filter(ContentModel::isStar).count();
     }
 
     // static {
