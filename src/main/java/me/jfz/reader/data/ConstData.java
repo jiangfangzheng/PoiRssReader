@@ -13,6 +13,8 @@ public final class ConstData {
 
    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+    public static RssAllData rssData = new RssAllData();
+
     private ConstData() {
     }
 }

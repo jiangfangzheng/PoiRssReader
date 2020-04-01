@@ -1,10 +1,7 @@
 package me.jfz.reader;
 
-import static me.jfz.reader.data.RssData.deserializeNameAndContentModelsMap;
-import static me.jfz.reader.data.RssData.getSubscribeModelMapFromJson;
-import static me.jfz.reader.data.RssData.getUrlMapFromSubscribeMap;
-import static me.jfz.reader.data.RssData.idAndSubscibeModelMap;
-import static me.jfz.reader.data.RssData.nameAndUrl;
+import static me.jfz.reader.data.ConstData.rssData;
+import static me.jfz.reader.handle.RssDataHandle.deserializeRssData;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +25,8 @@ public class Main {
 
     private static void init() {
         logger.info("init()");
-
-        // 反序列化已有的内容数据
-        deserializeNameAndContentModelsMap();
-
-        // 取json中feed重新检查新的订阅
-        getSubscribeModelMapFromJson("feedData.json", idAndSubscibeModelMap);
-
-        // SubscibeModel数据转为nameAndUrl Map存储
-        getUrlMapFromSubscribeMap(idAndSubscibeModelMap, nameAndUrl);
+        // 反序列化已有的数据
+        rssData = deserializeRssData();
     }
 
 }

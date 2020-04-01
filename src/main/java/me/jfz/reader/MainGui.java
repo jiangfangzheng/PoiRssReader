@@ -1,13 +1,17 @@
 package me.jfz.reader;
 
-import static me.jfz.reader.data.RssData.allSubscribeCount;
-import static me.jfz.reader.data.RssData.idAndSubscibeModelMap;
-import static me.jfz.reader.data.RssData.nameAndContentModelsMap;
-import static me.jfz.reader.data.RssData.serializeNameAndContentModelsMap;
-import static me.jfz.reader.data.RssData.unreadSubscribeCount;
-import static me.jfz.reader.data.RssData.unstarSubscribeCount;
+import static me.jfz.reader.data.ConstData.rssData;
+import static me.jfz.reader.handle.RssDataHandle.allSubscribeCount;
+import static me.jfz.reader.handle.RssDataHandle.getAllContents;
+import static me.jfz.reader.handle.RssDataHandle.getReadContents;
+import static me.jfz.reader.handle.RssDataHandle.getStarContents;
+import static me.jfz.reader.handle.RssDataHandle.unreadSubscribeCount;
+import static me.jfz.reader.handle.RssDataHandle.unstarSubscribeCount;
 
+import me.jfz.reader.data.RssAllData;
+import me.jfz.reader.handle.RssDataHandle;
 import me.jfz.reader.model.ContentModel;
+import me.jfz.reader.model.FeedModel;
 import me.jfz.reader.model.SubscibeModel;
 import me.jfz.reader.thread.SubscibeThread;
 
@@ -26,8 +30,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
@@ -108,7 +112,8 @@ public class MainGui {
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                serializeNameAndContentModelsMap();
+                // serializeNameAndContentModelsMap();
+                RssDataHandle.serializeRssData(rssData);
                 logger.warn("窗口关闭，程序关闭！");
                 System.exit(0);
             }
@@ -184,7 +189,7 @@ public class MainGui {
         setUiInitTextMsg();
 
         // JTree动态加载RSS订阅源
-        TreeModel newModel = getJTreeClassFeedModelData();
+        TreeModel newModel = getJTreeClassFeedModelData(rssData);
         tree1.setModel(newModel);
 
         // 文章列表容器加边框区别
@@ -201,21 +206,40 @@ public class MainGui {
         // scrollPanel2.setHorizontalScrollBarPolicy(HORIZONTAL_SCROLLBAR_ALWAYS);
 
         // 事件处理
-        button1.addActionListener(e -> logger.info("所有 按钮被点击"));
-        button2.addActionListener(e -> logger.info("未读 按钮被点击"));
-        button3.addActionListener(e -> logger.info("星标 按钮被点击"));
+        button1.addActionListener(e -> {
+            logger.info("所有 按钮被点击");
+            Set<ContentModel> allContents = getAllContents(rssData);
+            addContentModels2JList(allContents);
+        });
+        button2.addActionListener(e -> {
+            logger.info("未读 按钮被点击");
+            Set<ContentModel> readContents = getReadContents(rssData, false);
+            addContentModels2JList(readContents);
+        });
+        button3.addActionListener(e -> {
+            logger.info("星标 按钮被点击");
+            Set<ContentModel> starContents = getStarContents(rssData, true);
+            addContentModels2JList(starContents);
+        });
         button4.addActionListener(e -> {
             logger.info("刷新 按钮被点击");
             initAsync(jComponents);
         });
         button5.addActionListener(e -> logger.info("新增订阅... 按钮被点击"));
         button6.addActionListener(e -> logger.info("搜索... 按钮被点击"));
+        // 列表树事件
         tree1.addTreeSelectionListener(e -> {
-            String name = e.getPath().getLastPathComponent().toString();
-            logger.info("当前被选中的节点:{}", name);
+            DefaultMutableTreeNode defaultMutableTreeNode = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
+            if (!(defaultMutableTreeNode.getUserObject() instanceof FeedModel)) {
+                logger.warn("当前树节点不是 FeedModel");
+                return;
+            }
+
+            FeedModel feedModel = (FeedModel) defaultMutableTreeNode.getUserObject();
+            logger.info("当前被选中的节点:{}", feedModel.getName());
 
             DefaultListModel<ContentModel> defaultListModel = new DefaultListModel<>();
-            Set<ContentModel> contentModels = nameAndContentModelsMap.get(name);
+            Set<ContentModel> contentModels = rssData.getContentMap().get(feedModel.getId());
             if (contentModels == null) {
                 list1.setModel(defaultListModel);
                 return;
@@ -249,6 +273,7 @@ public class MainGui {
         });
         list1.add(jPopupMenu);
         list1.addMouseListener(new myJListListener(list1, jPopupMenu));
+        // 列表文章事件
         list1.addListSelectionListener(e -> {
             // 设置只有释放鼠标时才触发
             if (!list1.getValueIsAdjusting()) {
@@ -282,6 +307,20 @@ public class MainGui {
     }
 
     /**
+     * 将ContentModel列表加入到Jlist中
+     *
+     * @param readContents
+     */
+    private void addContentModels2JList(Set<ContentModel> readContents) {
+        DefaultListModel<ContentModel> defaultListModel = new DefaultListModel<>();
+        int i = 0;
+        for (ContentModel contentModel : readContents) {
+            defaultListModel.add(i++, contentModel);
+        }
+        list1.setModel(defaultListModel);
+    }
+
+    /**
      * ContentModel转HTML样式
      *
      * @param contentModel contentModel
@@ -303,9 +342,9 @@ public class MainGui {
     private void setUiInitTextMsg() {
         label1.setText("概览");
         label2.setText("订阅项：0   总条数：0");
-        button1.setText("所有  ( " + allSubscribeCount() + " )");
-        button2.setText("未读  ( " + unreadSubscribeCount() + " )");
-        button3.setText("星标  ( " + unstarSubscribeCount() + " )");
+        button1.setText("所有  ( " + allSubscribeCount(rssData) + " )");
+        button2.setText("未读  ( " + unreadSubscribeCount(rssData) + " )");
+        button3.setText("星标  ( " + unstarSubscribeCount(rssData) + " )");
         button4.setText("刷新");
         button5.setText("新增订阅...");
         button6.setText("搜索...");
@@ -316,26 +355,25 @@ public class MainGui {
      *
      * @return reeModel
      */
-    private TreeModel getJTreeClassFeedModelData() {
+    private TreeModel getJTreeClassFeedModelData(RssAllData rssData) {
         // 创建根节点
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new SubscibeModel("root", "所有订阅", "", -1, null));
 
-        // 2级节点
-        Set<SubscibeModel> collectType = idAndSubscibeModelMap.values()
-            .stream()
-            .filter(e -> e.getType() == 0)
-            .collect(Collectors.toSet());
-        for (SubscibeModel typeModel : collectType) {
-            DefaultMutableTreeNode tmp2Node = new DefaultMutableTreeNode(typeModel);
-            // 3级节点
-            Set<SubscibeModel> subscibeModelSet = idAndSubscibeModelMap.values()
-                .stream()
-                .filter(e -> e.getType() == 1)
-                .filter(e -> e.getPreNode().equals(typeModel.getId()))
-                .collect(Collectors.toSet());
-            for (SubscibeModel sub : subscibeModelSet) {
-                tmp2Node.add(new DefaultMutableTreeNode(sub));
+        Map<String, Set<String>> groupMap = rssData.getGroupMap();
+        Map<String, FeedModel> feedMap = rssData.getFeedMap();
+
+        // 2级节点（分组名）
+        for (Map.Entry<String, Set<String>> entry : groupMap.entrySet()) {
+            String groupName = entry.getKey();
+            DefaultMutableTreeNode tmp2Node = new DefaultMutableTreeNode(groupName);
+
+            // 3级节点（Feed名）
+            Set<String> feedIds = entry.getValue();
+            for (String feedId : feedIds) {
+                FeedModel feedModel = feedMap.get(feedId);
+                tmp2Node.add(new DefaultMutableTreeNode(feedModel));
             }
+
             rootNode.add(tmp2Node);
         }
 
