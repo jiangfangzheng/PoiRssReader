@@ -1,6 +1,7 @@
 package me.jfz.reader.thread;
 
 import static me.jfz.reader.data.ConstData.rssData;
+import static me.jfz.reader.handle.RssDataHandle.refreshFeed;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class SubscibeThread extends Thread {
         progressBar.setMaximum(rssData.getFeedMap().size());
         progressBar.setValue(0);
 
+        refreshFeed(rssData);
         logger.info("SubscibeThread() run finished.");
 
         label.setText("订阅项：" + rssData.getFeedMap().size() + "   总条数：" + "");

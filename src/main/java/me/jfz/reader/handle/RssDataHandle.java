@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -41,42 +42,40 @@ public class RssDataHandle {
      * @param args the input arguments
      */
     public static void main(String[] args) {
-        // RssAllData rssAllData = new RssAllData();
-        // Set<String> set = new HashSet<>();
-        // set.add("1");
-        // rssAllData.getGroupMap().put("IT", set);
-        // Set<String> set2 = new HashSet<>();
-        // set2.add("2");
-        // rssAllData.getGroupMap().put("娱乐", set2);
-        //
-        // rssAllData.getFeedMap()
-        //     .put("1",
-        //         new FeedModel("1", "阮一峰", "http://www.ruanyifeng.com/blog/", "http://www.ruanyifeng.com/blog/atom
-        //         .xml",
-        //             "IT"));
-        // rssAllData.getFeedMap()
-        //     .put("2",
-        //         new FeedModel("2", "福利吧", "https://fulibus.net/", "https://fulibus.net/feed",
-        //             "娱乐"));
-        // serializeRssData(rssAllData);
+        RssAllData rssAllData = new RssAllData();
+        Set<String> set = new HashSet<>();
+        set.add("1");
+        rssAllData.getGroupMap().put("IT", set);
+        Set<String> set2 = new HashSet<>();
+        set2.add("2");
+        rssAllData.getGroupMap().put("娱乐", set2);
+
+        rssAllData.getFeedMap()
+            .put("1",
+                new FeedModel("1", "阮一峰", "http://www.ruanyifeng.com/blog/", "http://www.ruanyifeng.com/blog/atom.xml","IT"));
+        rssAllData.getFeedMap()
+            .put("2",
+                new FeedModel("2", "福利吧", "https://fulibus.net/", "https://fulibus.net/feed",
+                    "娱乐"));
+        serializeRssData(rssAllData);
 
         // 刷新
-        RssAllData rssAllData = deserializeRssData();
-        Map<String, Set<ContentModel>> contentMap = rssAllData.getContentMap();
-        for (Set<ContentModel> contentModelSet : contentMap.values()) {
-            for (ContentModel c : contentModelSet) {
-                logger.warn("标题：{}", c.getTitle());
-            }
-        }
-        refreshFeed(rssAllData);
-        logger.warn("刷新后");
-        contentMap = rssAllData.getContentMap();
-        for (Set<ContentModel> contentModelSet : contentMap.values()) {
-            for (ContentModel c : contentModelSet) {
-                logger.warn("标题：{}", c.getTitle());
-            }
-        }
-        serializeRssData(rssAllData);
+        // RssAllData rssAllData = deserializeRssData();
+        // Map<String, Set<ContentModel>> contentMap = rssAllData.getContentMap();
+        // for (Set<ContentModel> contentModelSet : contentMap.values()) {
+        //     for (ContentModel c : contentModelSet) {
+        //         logger.warn("标题：{}", c.getTitle());
+        //     }
+        // }
+        // refreshFeed(rssAllData);
+        // logger.warn("刷新后");
+        // contentMap = rssAllData.getContentMap();
+        // for (Set<ContentModel> contentModelSet : contentMap.values()) {
+        //     for (ContentModel c : contentModelSet) {
+        //         logger.warn("标题：{}", c.getTitle());
+        //     }
+        // }
+        // serializeRssData(rssAllData);
 
     }
 
