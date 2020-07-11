@@ -20,7 +20,7 @@ public class Main {
         // 预处理
         init();
         // 启动GUI
-        MainGui.main(args);
+        Gui.main(args);
     }
 
     private static void init() {
